@@ -45,7 +45,9 @@ jobs:
           sudo systemctl stop greeting.service
           sudo mv /usr/webservice/greeting/app.jar /usr/webservice/greeting/app_old.jar
           sudo mv /usr/webservice/target/greeting-spring-boot-0.0.1-SNAPSHOT.jar /usr/webservice/greeting/app.jar
-          sudo chmod +x /usr/webservice/greeting/app.jar & sudo systemctl start greeting.service & sudo systemctl status greeting.service
+          sudo chmod +x /usr/webservice/greeting/app.jar
+          sudo systemctl start greeting.service
+          sudo systemctl status greeting.service
           
           
     
