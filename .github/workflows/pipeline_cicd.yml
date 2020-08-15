@@ -31,7 +31,7 @@ jobs:
         username: ${{ secrets.AWS_USER }}
         key: ${{ secrets.AWS_KEY }}
         port: ${{ secrets.AWS_PORT }}
-        source: "target/greeting-spring-boot-0.0.1-SNAPSHOT.jar"
+        source: "target/webservice-greeting.jar"
         target: ${{ secrets.AWS_PATH_WEBSERVICE }}
         
     - name: Execution de la commande ssh sur le serveur à deployer
@@ -43,9 +43,9 @@ jobs:
         port: ${{ secrets.AWS_PORT }}
         script: |
           sudo systemctl stop greeting.service
-          sudo mv /usr/webservice/greeting/app.jar /usr/webservice/greeting/app_old.jar
-          sudo mv /usr/webservice/target/greeting-spring-boot-0.0.1-SNAPSHOT.jar /usr/webservice/greeting/app.jar
-          sudo chmod +x /usr/webservice/greeting/app.jar
+          sudo mv /usr/local/webservice/greeting/app.jar /usr/local/webservice/greeting/app_old.jar
+          sudo mv /usr/local/webservice/target/greeting-spring-boot-0.0.1-SNAPSHOT.jar /usr/local/webservice/greeting/app.jar
+          sudo chmod +x /usr/local/webservice/greeting/app.jar
           sudo systemctl start greeting.service
           sudo systemctl status greeting.service
           
