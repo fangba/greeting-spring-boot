@@ -1,0 +1,54 @@
+# This workflow will build a Java project with Maven
+# For more information see: https://help.github.com/actions/language-and-framework-guides/building-and-testing-java-with-maven
+
+name: Java CI with Maven
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Installation java depuis le container setup-java
+      uses: actions/setup-java@v1
+      with:
+        java-version: 1.8
+
+    - name: Génération du JAR avec maven
+      run: mvn -B package --file pom.xml
+      
+    - name: Envoie du JAR sur le serveur AWS via ssh
+      uses: appleboy/scp-action@master
+      with:
+        host: ${{ secrets.AWS_HOST }}
+        username: ${{ secrets.AWS_USER }}
+        key: ${{ secrets.AWS_KEY }}
+        port: ${{ secrets.AWS_PORT }}
+        source: "target/greeting-spring-boot-0.0.1-SNAPSHOT.jar"
+        target: ${{ secrets.AWS_PATH_WEBSERVICE }}
+        
+    - name: Execution de la commande ssh sur le serveur à deployer
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.AWS_HOST }}
+        username: ${{ secrets.AWS_USER }}
+        key: ${{ secrets.AWS_KEY }}
+        port: ${{ secrets.AWS_PORT }}
+        script: |
+          sudo systemctl stop greeting.service
+          sudo mv /usr/webservice/greeting/app.jar /usr/webservice/greeting/app_old.jar
+          sudo mv /usr/webservice/target/greeting-spring-boot-0.0.1-SNAPSHOT.jar /usr/webservice/greeting/app.jar
+          sudo chmod +x /usr/webservice/greeting/app.jar
+          sudo systemctl start greeting.service
+          sudo systemctl status greeting.service
+          
+          
+    
+          
