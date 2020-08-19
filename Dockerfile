@@ -1,7 +1,7 @@
 FROM alpine:latest
 RUN apk add openjdk8
 RUN mkdir /usr/local/webservice
-ADD target/rest-service-0.0.1-SNAPSHOT.jar /usr/local/webservice/spring-webservice.jar
-RUN chmod +x /usr/local/webservice/spring-webservice.jar
+ADD target/webservice-greeting.jar /usr/local/webservice/webservice-greeting.jar
+RUN chmod +x /usr/local/webservice/webservice-greeting.jar
 EXPOSE 8080
-CMD java -jar /usr/local/webservice/spring-webservice.jar
+CMD java -jar /usr/local/webservice/webservice-greeting.jar
