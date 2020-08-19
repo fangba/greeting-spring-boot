@@ -24,15 +24,15 @@ jobs:
     - name: Génération du JAR avec maven
       run: mvn -B package --file pom.xml
       
-    - name: Envoie du JAR sur le serveur AWS via ssh
-      uses: appleboy/scp-action@master
-      with:
-        host: ${{ secrets.AWS_HOST }}
-        username: ${{ secrets.AWS_USER }}
-        key: ${{ secrets.AWS_KEY }}
-        port: ${{ secrets.AWS_PORT }}
-        source: "target/webservice-greeting.jar"
-        target: ${{ secrets.AWS_PATH_WEBSERVICE }}
+#    - name: Envoie du JAR sur le serveur AWS via ssh
+#      uses: appleboy/scp-action@master
+#      with:
+#        host: ${{ secrets.AWS_HOST }}
+#        username: ${{ secrets.AWS_USER }}
+#        key: ${{ secrets.AWS_KEY }}
+#        port: ${{ secrets.AWS_PORT }}
+#        source: "target/webservice-greeting.jar"
+#        target: ${{ secrets.AWS_PATH_WEBSERVICE }}
         
     - name: Constrution et envoi de l'image docker sur le hub
       uses: docker/build-push-action@v1.1.0
@@ -43,8 +43,21 @@ jobs:
         tag: 1.0.1
         tag_with_ref: true
         tag_with_sha: true
+   
+    - name: Execution de la commande ssh sur le serveur à deployer
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.AWS_HOST }}
+        username: ${{ secrets.AWS_USER }}
+        key: ${{ secrets.AWS_KEY }}
+        port: ${{ secrets.AWS_PORT }}
+        script: |
+          sudo docker stop webservice-greeting
+          sudo docker rm webservice-greeting
+          sudo docker pull fangba/spring-alpine:latest
+          sudo docker run -d --name webservice-greeting -p 8083:8080 fangba/spring-alpine:latest
+          sudo docker ps
        
-      
 #    - name: Execution de la commande ssh sur le serveur à deployer
 #      uses: appleboy/ssh-action@master
 #      with:
